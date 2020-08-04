@@ -5,19 +5,10 @@ import json
 class Training:
     def __init__(self, training):
         self.training = training
-
-    def define_activity(activity, minutes, seconds):## Function to set the steps the the training and to set the time of each step
+        
+    def define_activity(activity, hours, minutes, seconds):## Function to set the steps the the training and to set the time of each step
         global total_time
-        valid_time = True
-        while valid_time == True:
-            time_activity = (minutes*60)+seconds ## Convertion in seconds because Python's sleep function works only with seconds
-            try:
-                time_activity = float(time_activity)
-                if time_activity <=0:
-                    print('Enter with a number greater than zero')
-                valid_time = False
-            except:
-                print('Wrong format. Use just numbers and separete decimals with dot')
+        time_activity =  (hours*3600) + (minutes * 60) + seconds ## Convertion in seconds because Python's sleep function works only with seconds
         activities[activity]= time_activity ## Add activities to a dictionary
         total_time += time_activity ## Add the training step to the total time
 
@@ -62,7 +53,6 @@ class Training:
         x+=1
         y+=1
 
-
 ## Variables
 activities = {}
 total_time = 0
@@ -77,19 +67,56 @@ print('Welcome to the training assistent v0.1\n')
 valid_repeat = True
 while valid_repeat == True:
     activity = input ('What kind of training is this? ')
-    time_min = input('For how many minutes? ')
-    time_sec = input('For how many seconds? ')
-    training = Training(gama)
-    Training.define_activity(activity, time_min, time_sec)
+
+    valid_hour = False ## Validation of users input for hours
+    while valid_hour == False:
+        time_hours = input('How many hours this step will have? ')
+        try:
+            time_hours = float(time_hours)
+            if time_hours < 0:
+                print('The number of hours canot be less than 0')
+            valid_hour = True
+        except:
+            print('Wrong format. Use just numbers and separete decimals with dot')
+
+    valid_minutes = False## Validation of users input for minutes
+    while valid_minutes == False:
+        time_minutes = input('How many minutes this step will have? ')
+        try:
+            time_minutes = float(time_minutes)
+            if time_minutes < 0:
+                print('The number of minutes canot be less than 0')
+            valid_minutes = True
+        except:
+            print('Wrong format. Use just numbers and separete decimals with dot')
+
+    valid_seconds = False ## Validation of users input for seconds
+    while valid_seconds == False:
+        time_seconds = input('How many seconds this step will have? ')
+        try:
+            time_seconds = float(time_seconds)
+            if time_seconds < 0:
+                print('The number of seconds canot be less than 0')
+            valid_seconds = True
+        except:
+            print('Wrong format. Use just numbers and separete decimals with dot')
+
+    
+    training = Training(gama) ## Just because without this the class wouldn't work 
+    Training.define_activity(activity, time_hours, time_minutes, time_seconds)
     repeat = input('Want to add another activity? (Y/N)' ).lower()
     if repeat == 'n':
         valid_repeat = False
     else:
         pass
 
+
+
+
+
 print(json.dumps(activities, indent=1)) ## Print a legible dict with all training steps and times
 print('\n')
-print('The training will have: '+str(total_time)+' seconds\n') ## Print the total time of the training
+print('The training will have: '+ time.strftime('%H hours, %M minutes, %S seconds', time.gmtime(total_time))) ## Print the total time of the training
 
 Training.start_training()
 
@@ -98,19 +125,3 @@ for key in activities:
         Training.start_activity()
     except:
         print('You finished the training! May the force be with you')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
